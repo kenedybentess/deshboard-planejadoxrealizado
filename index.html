@@ -8,94 +8,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: #1e3a8a;
-            min-height: 100vh;
-        }
-
-     .glass {
-            background: rgba(255, 255, 255, 1);
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-     .card-planejado {
-            border-left: 6px solid #2563eb;
-       }
-
-     .card-transferido {
-            border-left: 6px solid #16a34a;
-       }
-
-     .table-container {
-            max-height: calc(100vh - 440px);
-            overflow: auto;
-        }
-
-        @media (max-width: 768px) {
-         .table-container {
-                max-height: calc(100vh - 560px);
-            }
-        }
-
-     .table-container::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-     .table-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-     .table-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-     .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-     .fade-in {
-            animation: fadeIn 0.4s ease-out;
-        }
-
-     .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-     .data-row:hover {
-            background-color: #f8fafc;
-        }
-
-     .sort-indicator {
-            opacity: 0.4;
-            transition: opacity 0.2s;
-        }
-
-        th:hover.sort-indicator {
-            opacity: 1;
-        }
-
-     .sort-indicator.active {
-            opacity: 1;
-        }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #1e3a8a; min-height: 100vh; }
+   .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+   .card-planejado { border-left: 6px solid #2563eb; }
+   .card-transferido { border-left: 6px solid #16a34a; }
+   .table-container { max-height: calc(100vh - 440px); overflow: auto; }
+        @media (max-width: 768px) {.table-container { max-height: calc(100vh - 560px); } }
+   .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
+   .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
+   .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+   .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+   .fade-in { animation: fadeIn 0.4s ease-out; }
+   .sticky-header { position: sticky; top: 0; z-index: 10; }
+   .data-row:hover { background-color: #f8fafc; }
+   .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
+        th:hover.sort-indicator { opacity: 1; }
+   .sort-indicator.active { opacity: 1; }
     </style>
 </head>
 <body class="p-3 md:p-5">
@@ -112,9 +43,7 @@
                         <p class="text-gray-600 text-sm md:text-base font-medium">Controle de peças planejadas vs transferidas</p>
                     </div>
                 </div>
-                <button
-                    id="refreshBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-base whitespace-nowrap">
+                <button id="refreshBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-base whitespace-nowrap">
                     <i class="fa-solid fa-rotate-right" id="refreshIcon"></i>
                     <span>Atualizar</span>
                 </button>
@@ -177,11 +106,7 @@
                 <div class="w-full lg:w-80">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Buscar produto..."
-                            class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white text-base font-medium text-gray-900">
+                        <input type="text" id="searchInput" placeholder="Buscar produto..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white text-base font-medium text-gray-900">
                     </div>
                 </div>
             </div>
@@ -189,13 +114,11 @@
 
         <!-- Table Container -->
         <div class="glass overflow-hidden fade-in">
-            <!-- Loading State -->
             <div id="loadingState" class="flex flex-col items-center justify-center py-24">
                 <div class="w-16 h-16 border-6 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
                 <p class="text-gray-700 font-bold text-xl">Carregando dados...</p>
             </div>
 
-            <!-- Error State -->
             <div id="errorState" class="hidden flex-col items-center justify-center py-24 px-6">
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
                     <i class="fa-solid fa-circle-exclamation text-red-600 text-3xl"></i>
@@ -205,7 +128,6 @@
                 <button onclick="loadSheetData()" class="text-blue-600 hover:text-blue-800 font-bold underline">Tentar Novamente</button>
             </div>
 
-            <!-- Table -->
             <div id="tableWrapper" class="hidden">
                 <div class="table-container">
                     <table class="w-full" id="dataTable">
@@ -236,6 +158,7 @@
         let searchTerm = '';
         let planejadoIdx = -1;
         let transferidoIdx = -1;
+        let codigoIdx = -1;
 
         const loadingState = document.getElementById('loadingState');
         const errorState = document.getElementById('errorState');
@@ -249,26 +172,38 @@
 
         async function loadSheetData() {
             showLoading();
-
             try {
                 const response = await fetch(CSV_URL);
                 if (!response.ok) throw new Error('Falha ao buscar dados da planilha');
-
                 const csvText = await response.text();
                 const parsed = parseCSV(csvText);
-
                 if (parsed.length === 0) throw new Error('Nenhum dado encontrado na planilha');
-
                 headers = parsed[0];
                 sheetData = parsed.slice(1);
-
+                
+                // Adiciona coluna FALTAM no header se não existir
+                const faltamIdx = headers.findIndex(h => h.toUpperCase() === 'FALTAM');
+                if (faltamIdx === -1) {
+                    // Insere FALTAM logo após TRANSFERIDO
+                    const transferidoPos = headers.findIndex(h => h.toLowerCase().includes('transferido'));
+                    if (transferidoPos!== -1) {
+                        headers.splice(transferidoPos + 1, 0, 'FALTAM');
+                        // Insere valor vazio em todas as linhas pra manter índice
+                        sheetData = sheetData.map(row => {
+                            const newRow = [...row];
+                            newRow.splice(transferidoPos + 1, 0, '');
+                            return newRow;
+                        });
+                    }
+                }
+                
                 planejadoIdx = headers.findIndex(h => h.toLowerCase().includes('planejado'));
                 transferidoIdx = headers.findIndex(h => h.toLowerCase().includes('transferido'));
-
+                codigoIdx = headers.findIndex(h => h.toUpperCase().includes('CÓDIGO DO PRODUTO'));
+                
                 updateStats();
                 renderTable();
                 showTable();
-
             } catch (error) {
                 console.error('Erro ao carregar planilha:', error);
                 showError(error.message);
@@ -280,66 +215,50 @@
             let row = [];
             let cell = '';
             let insideQuotes = false;
-
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 const nextChar = text[i + 1];
-
                 if (char === '"') {
-                    if (insideQuotes && nextChar === '"') {
-                        cell += '"';
-                        i++;
-                    } else {
-                        insideQuotes =!insideQuotes;
-                    }
+                    if (insideQuotes && nextChar === '"') { cell += '"'; i++; }
+                    else { insideQuotes =!insideQuotes; }
                 } else if (char === ',' &&!insideQuotes) {
-                    row.push(cell);
-                    cell = '';
+                    row.push(cell); cell = '';
                 } else if ((char === '\n' || char === '\r') &&!insideQuotes) {
                     if (char === '\r' && nextChar === '\n') i++;
                     row.push(cell);
-                    if (row.length > 0 && row.some(c => c.trim()!== '')) {
-                        rows.push(row);
-                    }
-                    row = [];
-                    cell = '';
-                } else {
-                    cell += char;
-                }
+                    if (row.length > 0 && row.some(c => c.trim()!== '')) { rows.push(row); }
+                    row = []; cell = '';
+                } else { cell += char; }
             }
-
             if (cell || row.length > 0) {
                 row.push(cell);
                 if (row.some(c => c.trim()!== '')) rows.push(row);
             }
-
             return rows;
         }
 
         function renderTable() {
             if (headers.length === 0) return;
-
             tableHead.innerHTML = `
                 <tr class="border-b-2 border-gray-300">
                     ${headers.map((header, idx) => {
                         let displayName = header;
-                        
-                        // Renomeia a coluna específica
                         if (displayName.toUpperCase() === 'CÓDIGO DO PRODUTO REVISÃO/TRANSFORMAÇÃO') {
                             displayName = 'CÓDIGO DO PRODUTO';
                         }
-                        
+                        if (displayName.toUpperCase() === 'CRIAR PLANILHA PRODUÇÃO') {
+                            displayName = 'PRODUÇÃO %';
+                        }
                         let emoji = '';
                         const h = header.toLowerCase();
-                        
                         if (h.includes('codigo')) emoji = '🏷 ';
-                        if (h.includes('revisão') || h.includes('revisao')) emoji = '🔧 ';
                         if (h.includes('ativas')) emoji = '';
                         if (h.includes('linha')) emoji = '';
                         if (h.includes('produto elgin')) emoji = '📋 ';
                         if (h.includes('planejado')) emoji = '📦 ';
                         if (h.includes('transferido')) emoji = '✅ ';
-
+                        if (h.includes('faltam')) emoji = '📉 ';
+                        if (h.includes('produção %') || h.includes('criar planilha')) emoji = '📊 ';
                         return `
                         <th class="px-5 md:px-6 py-4 text-left text-sm font-black text-gray-800 uppercase tracking-wide cursor-pointer hover:bg-gray-200 transition-colors select-none"
                             onclick="sortTable(${idx})">
@@ -352,25 +271,29 @@
                     `}).join('')}
                 </tr>
             `;
-
             const filteredData = filterData();
-
             if (filteredData.length === 0) {
                 tableBody.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
                 return;
             }
-
             emptyState.classList.add('hidden');
             emptyState.classList.remove('flex');
-
             tableBody.innerHTML = filteredData.map(row => `
                 <tr class="data-row border-b border-gray-100">
                     ${row.map((cell, idx) => {
                         const headerLower = headers[idx].toLowerCase();
                         let cellClass = 'px-5 md:px-6 py-4 text-gray-900';
-
+                        
+                        // Calcula FALTAM se for a coluna FALTAM
+                        let cellValue = cell;
+                        if (headerLower === 'faltam' && planejadoIdx >= 0 && transferidoIdx >= 0) {
+                            const planejado = parseFloat(row[planejadoIdx]?.replace(/[.,]/g, '')) || 0;
+                            const transferido = parseFloat(row[transferidoIdx]?.replace(/[.,]/g, '')) || 0;
+                            cellValue = planejado - transferido;
+                        }
+                        
                         if (headerLower.includes('codigo')) {
                             cellClass += ' text-base font-bold';
                         } else if (headerLower.includes('produto elgin')) {
@@ -379,49 +302,55 @@
                             cellClass += ' text-xl font-bold text-blue-700';
                         } else if (headerLower.includes('transferido')) {
                             cellClass += ' text-xl font-bold text-green-700';
-                        } else if (headerLower.includes('linha') || headerLower.includes('ativas')) {
-                            cellClass += ' text-base font-medium';
+                        } else if (headerLower.includes('faltam')) {
+                            cellClass += ' text-xl font-bold';
+                            const faltam = parseFloat(cellValue);
+                            if (!isNaN(faltam)) {
+                                if (faltam <= 0) cellClass += ' text-green-600';
+                                else if (faltam < 100) cellClass += ' text-orange-600';
+                                else cellClass += ' text-red-600';
+                            }
+                        } else if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
+                            cellClass += ' text-xl font-black';
+                            const percent = parseFloat(cellValue);
+                            if (!isNaN(percent)) {
+                                if (percent >= 100) cellClass += ' text-green-600';
+                                else if (percent >= 50) cellClass += ' text-orange-600';
+                                else cellClass += ' text-red-600';
+                            }
                         } else {
                             cellClass += ' text-base font-medium';
                         }
-
-                        return `
-                        <td class="${cellClass} whitespace-nowrap">
-                            ${formatCell(cell, idx)}
-                        </td>
-                    `}).join('')}
+                        return `<td class="${cellClass} whitespace-nowrap">${formatCell(cellValue, idx)}</td>`;
+                    }).join('')}
                 </tr>
             `).join('');
         }
 
         function filterData() {
             let data = [...sheetData];
-
+            if (codigoIdx!== -1) {
+                data = data.filter(row => {
+                    const codigo = row[codigoIdx];
+                    return codigo && codigo.trim()!== '' && codigo.trim()!== '—' && codigo.trim()!== '-';
+                });
+            }
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
-                data = data.filter(row =>
-                    row.some(cell => cell.toLowerCase().includes(term))
-                );
+                data = data.filter(row => row.some(cell => cell.toLowerCase().includes(term)));
             }
-
             if (currentSort.column!== null) {
                 data.sort((a, b) => {
                     const aVal = a[currentSort.column] || '';
                     const bVal = b[currentSort.column] || '';
-
                     const aNum = parseFloat(aVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
                     const bNum = parseFloat(bVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
-
                     if (!isNaN(aNum) &&!isNaN(bNum)) {
                         return currentSort.direction === 'asc'? aNum - bNum : bNum - aNum;
                     }
-
-                    return currentSort.direction === 'asc'
-                     ? aVal.localeCompare(bVal)
-                        : bVal.localeCompare(aVal);
+                    return currentSort.direction === 'asc'? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
                 });
             }
-
             return data;
         }
 
@@ -436,24 +365,23 @@
         }
 
         function formatCell(value, colIdx) {
-            const val = escapeHtml(value);
-
+            const val = String(value);
+            const headerLower = headers[colIdx].toLowerCase();
+            
+            if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
+                const num = parseFloat(val);
+                if (!isNaN(num)) return num.toFixed(2) + '%';
+            }
+            
             const num = parseFloat(val.replace(/[.,]/g, ''));
             if (!isNaN(num) && val.trim()!== '') {
-                const headerLower = headers[colIdx].toLowerCase();
-                if (headerLower.includes('planejado') || headerLower.includes('transferido')) {
+                if (headerLower.includes('planejado') || headerLower.includes('transferido') || headerLower.includes('faltam')) {
                     return num.toLocaleString('pt-BR');
                 }
             }
-
             if (val.match(/^https?:\/\//i)) {
                 return `<a href="${val}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">${val}</a>`;
             }
-
-            if (val.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                return `<a href="mailto:${val}" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">${val}</a>`;
-            }
-
             return val || '<span class="text-gray-400">—</span>';
         }
 
@@ -464,26 +392,22 @@
         }
 
         function updateStats() {
-            document.getElementById('rowCount').textContent = sheetData.length.toLocaleString('pt-BR');
-
+            const filteredData = filterData();
+            document.getElementById('rowCount').textContent = filteredData.length.toLocaleString('pt-BR');
             let totalPlanejado = 0;
             let totalTransferido = 0;
-
             if (planejadoIdx >= 0 && transferidoIdx >= 0) {
-                sheetData.forEach(row => {
+                filteredData.forEach(row => {
                     const planejado = parseFloat(row[planejadoIdx]?.replace(/[.,]/g, '')) || 0;
                     const transferido = parseFloat(row[transferidoIdx]?.replace(/[.,]/g, '')) || 0;
                     totalPlanejado += planejado;
                     totalTransferido += transferido;
                 });
             }
-
             document.getElementById('totalPlanejado').textContent = totalPlanejado.toLocaleString('pt-BR');
             document.getElementById('totalTransferido').textContent = totalTransferido.toLocaleString('pt-BR');
-
             const percentual = totalPlanejado > 0? ((totalTransferido / totalPlanejado) * 100).toFixed(1) : 0;
             document.getElementById('percentualGeral').textContent = percentual + '%';
-
             document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
@@ -514,12 +438,11 @@
         searchInput.addEventListener('input', (e) => {
             searchTerm = e.target.value;
             renderTable();
+            updateStats();
         });
 
         refreshBtn.addEventListener('click', loadSheetData);
-
         setInterval(loadSheetData, 5 * 60 * 1000);
-
         loadSheetData();
     </script>
 </body>
