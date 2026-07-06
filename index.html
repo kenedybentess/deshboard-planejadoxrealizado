@@ -10,23 +10,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         * { font-family: 'Inter', sans-serif; }
         body { background: #1e3a8a; min-height: 100vh; }
-   .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-   .card-planejado { border-left: 6px solid #2563eb; }
-   .card-transferido { border-left: 6px solid #16a34a; }
-   .table-container { max-height: calc(100vh - 440px); overflow: auto; }
+       .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+       .card-planejado { border-left: 6px solid #2563eb; }
+       .card-transferido { border-left: 6px solid #16a34a; }
+       .table-container { max-height: calc(100vh - 440px); overflow: auto; }
         @media (max-width: 768px) {.table-container { max-height: calc(100vh - 560px); } }
-   .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
-   .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
-   .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+       .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
+       .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
+       .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-   .animate-spin { animation: spin 1s linear infinite; }
+       .animate-spin { animation: spin 1s linear infinite; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-   .fade-in { animation: fadeIn 0.4s ease-out; }
-   .sticky-header { position: sticky; top: 0; z-index: 10; }
-   .data-row:hover { background-color: #f8fafc; }
-   .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
+       .fade-in { animation: fadeIn 0.4s ease-out; }
+       .sticky-header { position: sticky; top: 0; z-index: 10; }
+       .data-row:hover { background-color: #f8fafc; }
+       .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
         th:hover.sort-indicator { opacity: 1; }
-   .sort-indicator.active { opacity: 1; }
+       .sort-indicator.active { opacity: 1; }
     </style>
 </head>
 <body class="p-3 md:p-5">
@@ -159,6 +159,7 @@
         let planejadoIdx = -1;
         let transferidoIdx = -1;
         let codigoIdx = -1;
+        let faltamIdx = -1;
 
         const loadingState = document.getElementById('loadingState');
         const errorState = document.getElementById('errorState');
@@ -170,39 +171,66 @@
         const refreshIcon = document.getElementById('refreshIcon');
         const emptyState = document.getElementById('emptyState');
 
+        function parseNumberBR(val) {
+            if (!val) return 0;
+            const clean = String(val).trim().replace(/\./g, '').replace(',', '.');
+            const num = parseFloat(clean);
+            return isNaN(num)? 0 : num;
+        }
+
+        // Remove colunas que não tem nenhuma informação útil
+        function removeEmptyColumns(parsedHeaders, parsedData) {
+            const colsToKeep = [];
+            parsedHeaders.forEach((header, idx) => {
+                const hasData = parsedData.some(row => {
+                    const cell = row[idx];
+                    return cell && String(cell).trim()!== '' && String(cell).trim()!== '—' && String(cell).trim()!== '-';
+                });
+                if (hasData) {
+                    colsToKeep.push(idx);
+                }
+            });
+            const newHeaders = colsToKeep.map(idx => parsedHeaders[idx]);
+            const newData = parsedData.map(row => colsToKeep.map(idx => row[idx] || ''));
+            return { headers: newHeaders, data: newData };
+        }
+
         async function loadSheetData() {
             showLoading();
             try {
-                const response = await fetch(CSV_URL);
+                const response = await fetch(CSV_URL + '&t=' + Date.now());
                 if (!response.ok) throw new Error('Falha ao buscar dados da planilha');
                 const csvText = await response.text();
                 const parsed = parseCSV(csvText);
                 if (parsed.length === 0) throw new Error('Nenhum dado encontrado na planilha');
-                headers = parsed[0];
-                sheetData = parsed.slice(1);
-                
-                // Adiciona coluna FALTAM no header se não existir
-                const faltamIdx = headers.findIndex(h => h.toUpperCase() === 'FALTAM');
-                if (faltamIdx === -1) {
-                    // Insere FALTAM logo após TRANSFERIDO
-                    const transferidoPos = headers.findIndex(h => h.toLowerCase().includes('transferido'));
-                    if (transferidoPos!== -1) {
-                        headers.splice(transferidoPos + 1, 0, 'FALTAM');
-                        // Insere valor vazio em todas as linhas pra manter índice
-                        sheetData = sheetData.map(row => {
-                            const newRow = [...row];
-                            newRow.splice(transferidoPos + 1, 0, '');
-                            return newRow;
-                        });
-                    }
-                }
-                
+
+                let tempHeaders = parsed[0].map(h => h.trim());
+                let tempData = parsed.slice(1);
+
+                // Remove colunas vazias antes de tudo
+                const cleaned = removeEmptyColumns(tempHeaders, tempData);
+                headers = cleaned.headers;
+                sheetData = cleaned.data;
+
+                // Encontra índices depois de limpar
                 planejadoIdx = headers.findIndex(h => h.toLowerCase().includes('planejado'));
                 transferidoIdx = headers.findIndex(h => h.toLowerCase().includes('transferido'));
                 codigoIdx = headers.findIndex(h => h.toUpperCase().includes('CÓDIGO DO PRODUTO'));
-                
-                updateStats();
+                faltamIdx = headers.findIndex(h => h.toUpperCase() === 'FALTAM');
+
+                // Adiciona coluna FALTAM se não existir
+                if (faltamIdx === -1 && transferidoIdx!== -1) {
+                    headers.splice(transferidoIdx + 1, 0, 'FALTAM');
+                    faltamIdx = transferidoIdx + 1;
+                    sheetData = sheetData.map(row => {
+                        const newRow = [...row];
+                        newRow.splice(transferidoIdx + 1, 0, '');
+                        return newRow;
+                    });
+                }
+
                 renderTable();
+                updateStats();
                 showTable();
             } catch (error) {
                 console.error('Erro ao carregar planilha:', error);
@@ -243,17 +271,15 @@
                 <tr class="border-b-2 border-gray-300">
                     ${headers.map((header, idx) => {
                         let displayName = header;
-                        if (displayName.toUpperCase() === 'CÓDIGO DO PRODUTO REVISÃO/TRANSFORMAÇÃO') {
+                        if (displayName.toUpperCase().includes('CÓDIGO DO PRODUTO REVISÃO')) {
                             displayName = 'CÓDIGO DO PRODUTO';
                         }
-                        if (displayName.toUpperCase() === 'CRIAR PLANILHA PRODUÇÃO') {
+                        if (displayName.toUpperCase().includes('CRIAR PLANILHA')) {
                             displayName = 'PRODUÇÃO %';
                         }
                         let emoji = '';
                         const h = header.toLowerCase();
                         if (h.includes('codigo')) emoji = '🏷 ';
-                        if (h.includes('ativas')) emoji = '';
-                        if (h.includes('linha')) emoji = '';
                         if (h.includes('produto elgin')) emoji = '📋 ';
                         if (h.includes('planejado')) emoji = '📦 ';
                         if (h.includes('transferido')) emoji = '✅ ';
@@ -285,15 +311,14 @@
                     ${row.map((cell, idx) => {
                         const headerLower = headers[idx].toLowerCase();
                         let cellClass = 'px-5 md:px-6 py-4 text-gray-900';
-                        
-                        // Calcula FALTAM se for a coluna FALTAM
+
                         let cellValue = cell;
-                        if (headerLower === 'faltam' && planejadoIdx >= 0 && transferidoIdx >= 0) {
-                            const planejado = parseFloat(row[planejadoIdx]?.replace(/[.,]/g, '')) || 0;
-                            const transferido = parseFloat(row[transferidoIdx]?.replace(/[.,]/g, '')) || 0;
+                        if (idx === faltamIdx && planejadoIdx >= 0 && transferidoIdx >= 0) {
+                            const planejado = parseNumberBR(row[planejadoIdx]);
+                            const transferido = parseNumberBR(row[transferidoIdx]);
                             cellValue = planejado - transferido;
                         }
-                        
+
                         if (headerLower.includes('codigo')) {
                             cellClass += ' text-base font-bold';
                         } else if (headerLower.includes('produto elgin')) {
@@ -304,20 +329,16 @@
                             cellClass += ' text-xl font-bold text-green-700';
                         } else if (headerLower.includes('faltam')) {
                             cellClass += ' text-xl font-bold';
-                            const faltam = parseFloat(cellValue);
-                            if (!isNaN(faltam)) {
-                                if (faltam <= 0) cellClass += ' text-green-600';
-                                else if (faltam < 100) cellClass += ' text-orange-600';
-                                else cellClass += ' text-red-600';
-                            }
+                            const faltam = parseNumberBR(cellValue);
+                            if (faltam <= 0) cellClass += ' text-green-600';
+                            else if (faltam < 100) cellClass += ' text-orange-600';
+                            else cellClass += ' text-red-600';
                         } else if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
                             cellClass += ' text-xl font-black';
-                            const percent = parseFloat(cellValue);
-                            if (!isNaN(percent)) {
-                                if (percent >= 100) cellClass += ' text-green-600';
-                                else if (percent >= 50) cellClass += ' text-orange-600';
-                                else cellClass += ' text-red-600';
-                            }
+                            const percent = parseNumberBR(cellValue);
+                            if (percent >= 100) cellClass += ' text-green-600';
+                            else if (percent >= 50) cellClass += ' text-orange-600';
+                            else cellClass += ' text-red-600';
                         } else {
                             cellClass += ' text-base font-medium';
                         }
@@ -337,18 +358,25 @@
             }
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
-                data = data.filter(row => row.some(cell => cell.toLowerCase().includes(term)));
+                data = data.filter(row => row.some(cell => String(cell).toLowerCase().includes(term)));
             }
             if (currentSort.column!== null) {
                 data.sort((a, b) => {
-                    const aVal = a[currentSort.column] || '';
-                    const bVal = b[currentSort.column] || '';
-                    const aNum = parseFloat(aVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
-                    const bNum = parseFloat(bVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
-                    if (!isNaN(aNum) &&!isNaN(bNum)) {
-                        return currentSort.direction === 'asc'? aNum - bNum : bNum - aNum;
+                    let aVal = a[currentSort.column] || '';
+                    let bVal = b[currentSort.column] || '';
+
+                    if (currentSort.column === faltamIdx) {
+                        aVal = parseNumberBR(a[planejadoIdx]) - parseNumberBR(a[transferidoIdx]);
+                        bVal = parseNumberBR(b[planejadoIdx]) - parseNumberBR(b[transferidoIdx]);
+                    } else {
+                        aVal = parseNumberBR(aVal);
+                        bVal = parseNumberBR(bVal);
                     }
-                    return currentSort.direction === 'asc'? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+
+                    if (!isNaN(aVal) &&!isNaN(bVal)) {
+                        return currentSort.direction === 'asc'? aVal - bVal : bVal - aVal;
+                    }
+                    return currentSort.direction === 'asc'? String(a[currentSort.column]).localeCompare(String(b[currentSort.column])) : String(b[currentSort.column]).localeCompare(String(a[currentSort.column]));
                 });
             }
             return data;
@@ -367,20 +395,18 @@
         function formatCell(value, colIdx) {
             const val = String(value);
             const headerLower = headers[colIdx].toLowerCase();
-            
+
             if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
-                const num = parseFloat(val);
-                if (!isNaN(num)) return num.toFixed(2) + '%';
+                const num = parseNumberBR(val);
+                return num.toFixed(2) + '%';
             }
-            
-            const num = parseFloat(val.replace(/[.,]/g, ''));
-            if (!isNaN(num) && val.trim()!== '') {
-                if (headerLower.includes('planejado') || headerLower.includes('transferido') || headerLower.includes('faltam')) {
-                    return num.toLocaleString('pt-BR');
-                }
+
+            const num = parseNumberBR(val);
+            if (headerLower.includes('planejado') || headerLower.includes('transferido') || headerLower.includes('faltam')) {
+                return num.toLocaleString('pt-BR');
             }
             if (val.match(/^https?:\/\//i)) {
-                return `<a href="${val}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">${val}</a>`;
+                return `<a href="${val}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">Abrir</a>`;
             }
             return val || '<span class="text-gray-400">—</span>';
         }
@@ -398,8 +424,8 @@
             let totalTransferido = 0;
             if (planejadoIdx >= 0 && transferidoIdx >= 0) {
                 filteredData.forEach(row => {
-                    const planejado = parseFloat(row[planejadoIdx]?.replace(/[.,]/g, '')) || 0;
-                    const transferido = parseFloat(row[transferidoIdx]?.replace(/[.,]/g, '')) || 0;
+                    const planejado = parseNumberBR(row[planejadoIdx]);
+                    const transferido = parseNumberBR(row[transferidoIdx]);
                     totalPlanejado += planejado;
                     totalTransferido += transferido;
                 });
