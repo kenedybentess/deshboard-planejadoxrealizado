@@ -14,51 +14,54 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            background: #1e3a8a;
             min-height: 100vh;
         }
 
-       .glass {
+     .glass {
             background: rgba(255, 255, 255, 1);
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-       .table-container {
-            max-height: calc(100vh - 420px);
+     .card-planejado {
+            border-left: 6px solid #2563eb;
+       }
+
+     .card-transferido {
+            border-left: 6px solid #16a34a;
+       }
+
+     .table-container {
+            max-height: calc(100vh - 440px);
             overflow: auto;
         }
 
         @media (max-width: 768px) {
-           .table-container {
-                max-height: calc(100vh - 520px);
+         .table-container {
+                max-height: calc(100vh - 560px);
             }
         }
 
-       .table-container::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
+     .table-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
         }
 
-       .table-container::-webkit-scrollbar-track {
-            background: #e5e7eb;
-            border-radius: 10px;
+     .table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
 
-       .table-container::-webkit-scrollbar-thumb {
-            background: #9ca3af;
-            border-radius: 10px;
-        }
-
-       .table-container::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
+     .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-       .animate-spin {
+     .animate-spin {
             animation: spin 1s linear infinite;
         }
 
@@ -67,23 +70,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-       .fade-in {
+     .fade-in {
             animation: fadeIn 0.4s ease-out;
         }
 
-       .sticky-header {
+     .sticky-header {
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
-       .data-row:hover {
-            background-color: #f9fafb;
-            transition: background-color 0.2s ease;
+     .data-row:hover {
+            background-color: #f8fafc;
         }
 
-       .sort-indicator {
-            opacity: 0.5;
+     .sort-indicator {
+            opacity: 0.4;
             transition: opacity 0.2s;
         }
 
@@ -91,121 +93,116 @@
             opacity: 1;
         }
 
-       .sort-indicator.active {
+     .sort-indicator.active {
             opacity: 1;
-        }
-
-       .stat-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-       .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
     </style>
 </head>
-<body class="p-3 md:p-6">
+<body class="p-3 md:p-5">
     <div class="max-w-[1800px] mx-auto">
         <!-- Header -->
-        <div class="glass rounded-3xl shadow-2xl p-6 md:p-8 mb-6 fade-in">
+        <div class="glass p-5 md:p-6 mb-4 fade-in">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-2 flex items-center gap-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-xl">
-                            <i class="fa-solid fa-boxes-stacked text-white text-3xl"></i>
-                        </div>
-                        Dashboard de Produção
-                    </h1>
-                    <p class="text-gray-700 text-lg md:text-xl font-semibold">Controle de peças planejadas vs transferidas</p>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fa-solid fa-boxes-stacked text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-black text-gray-900">Dashboard de Produção</h1>
+                        <p class="text-gray-600 text-sm md:text-base font-medium">Controle de peças planejadas vs transferidas</p>
+                    </div>
                 </div>
                 <button
                     id="refreshBtn"
-                    class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 text-xl whitespace-nowrap">
-                    <i class="fa-solid fa-rotate-right text-2xl" id="refreshIcon"></i>
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-base whitespace-nowrap">
+                    <i class="fa-solid fa-rotate-right" id="refreshIcon"></i>
                     <span>Atualizar</span>
                 </button>
             </div>
         </div>
 
         <!-- Big Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 fade-in">
-            <div class="stat-card glass rounded-3xl shadow-2xl p-8 md:p-10 border-l-8 border-blue-600">
-                <div class="flex items-start justify-between mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 fade-in">
+            <div class="glass card-planejado p-6 md:p-7">
+                <div class="flex items-start justify-between mb-3">
                     <div>
-                        <div class="text-2xl md:text-3xl font-bold text-gray-700 mb-2">📦 Planejado</div>
-                        <div class="text-gray-600 text-lg font-semibold">Total de peças</div>
+                        <div class="flex items-center gap-2 text-xl font-bold text-gray-700 mb-1">
+                            <span>📦</span> Planejado
+                        </div>
+                        <div class="text-gray-500 text-sm font-medium">Total de peças</div>
                     </div>
-                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-calendar-check text-white text-4xl"></i>
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-calendar-check text-blue-600 text-2xl"></i>
                     </div>
                 </div>
-                <div class="text-6xl md:text-7xl font-black text-blue-700 leading-none" id="totalPlanejado">0</div>
-                <div class="text-xl font-bold text-gray-600 mt-2">peças</div>
+                <div class="text-5xl md:text-6xl font-black text-blue-700 leading-none" id="totalPlanejado">0</div>
+                <div class="text-lg font-semibold text-gray-500 mt-1">peças</div>
             </div>
 
-            <div class="stat-card glass rounded-3xl shadow-2xl p-8 md:p-10 border-l-8 border-green-600">
-                <div class="flex items-start justify-between mb-4">
+            <div class="glass card-transferido p-6 md:p-7">
+                <div class="flex items-start justify-between mb-3">
                     <div>
-                        <div class="text-2xl md:text-3xl font-bold text-gray-700 mb-2">✅ Transferido</div>
-                        <div class="text-gray-600 text-lg font-semibold">Total de peças</div>
+                        <div class="flex items-center gap-2 text-xl font-bold text-gray-700 mb-1">
+                            <span>✅</span> Transferido
+                        </div>
+                        <div class="text-gray-500 text-sm font-medium">Total de peças</div>
                     </div>
-                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-circle-check text-white text-4xl"></i>
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check text-green-600 text-2xl"></i>
                     </div>
                 </div>
-                <div class="text-6xl md:text-7xl font-black text-green-700 leading-none" id="totalTransferido">0</div>
-                <div class="text-xl font-bold text-gray-600 mt-2">peças</div>
+                <div class="text-5xl md:text-6xl font-black text-green-700 leading-none" id="totalTransferido">0</div>
+                <div class="text-lg font-semibold text-gray-500 mt-1">peças</div>
             </div>
         </div>
 
         <!-- Controls & Stats -->
-        <div class="glass rounded-3xl shadow-2xl p-6 md:p-8 mb-6 fade-in">
+        <div class="glass p-5 md:p-6 mb-4 fade-in">
             <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
-                <div class="flex flex-wrap gap-4 w-full lg:w-auto">
-                    <div class="flex-1 min-w-[160px] bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-5 border-2 border-purple-300">
-                        <div class="text-lg font-bold text-gray-700 mb-1">Produtos</div>
-                        <div class="text-4xl font-black text-purple-700" id="rowCount">0</div>
+                <div class="flex flex-wrap gap-3 w-full lg:w-auto">
+                    <div class="flex-1 min-w-[140px] bg-purple-50 rounded-xl p-4 border border-purple-200">
+                        <div class="text-sm font-semibold text-gray-600 mb-1">Produtos</div>
+                        <div class="text-3xl font-black text-purple-700" id="rowCount">0</div>
                     </div>
-                    <div class="flex-1 min-w-[160px] bg-gradient-to-br from-orange-100 to-red-100 rounded-2xl p-5 border-2 border-orange-300">
-                        <div class="text-lg font-bold text-gray-700 mb-1">Conclusão</div>
-                        <div class="text-4xl font-black text-orange-700" id="percentualGeral">0%</div>
+                    <div class="flex-1 min-w-[140px] bg-orange-50 rounded-xl p-4 border border-orange-200">
+                        <div class="text-sm font-semibold text-gray-600 mb-1">Conclusão</div>
+                        <div class="text-3xl font-black text-orange-700" id="percentualGeral">0%</div>
                     </div>
-                    <div class="flex-1 min-w-[160px] bg-gradient-to-br from-gray-100 to-slate-100 rounded-2xl p-5 border-2 border-gray-300">
-                        <div class="text-lg font-bold text-gray-700 mb-1">Atualizado</div>
+                    <div class="flex-1 min-w-[140px] bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <div class="text-sm font-semibold text-gray-600 mb-1">Atualizado</div>
                         <div class="text-2xl font-black text-gray-800" id="lastUpdated">--:--</div>
                     </div>
                 </div>
 
-                <div class="w-full lg:w-96">
+                <div class="w-full lg:w-80">
                     <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 text-xl"></i>
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <input
                             type="text"
                             id="searchInput"
                             placeholder="Buscar produto..."
-                            class="w-full pl-14 pr-5 py-4 rounded-2xl border-2 border-gray-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-200 outline-none transition-all duration-200 bg-white text-xl font-semibold text-gray-900">
+                            class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white text-base font-medium text-gray-900">
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Table Container -->
-        <div class="glass rounded-3xl shadow-2xl overflow-hidden fade-in">
+        <div class="glass overflow-hidden fade-in">
             <!-- Loading State -->
-            <div id="loadingState" class="flex flex-col items-center justify-center py-32">
-                <div class="w-20 h-20 border-8 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
-                <p class="text-gray-800 font-bold text-2xl">Carregando dados...</p>
+            <div id="loadingState" class="flex flex-col items-center justify-center py-24">
+                <div class="w-16 h-16 border-6 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                <p class="text-gray-700 font-bold text-xl">Carregando dados...</p>
             </div>
 
             <!-- Error State -->
-            <div id="errorState" class="hidden flex-col items-center justify-center py-32 px-6">
-                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
-                    <i class="fa-solid fa-circle-exclamation text-red-600 text-4xl"></i>
+            <div id="errorState" class="hidden flex-col items-center justify-center py-24 px-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-circle-exclamation text-red-600 text-3xl"></i>
                 </div>
-                <p class="text-gray-900 font-black text-2xl mb-3">Erro ao carregar dados</p>
-                <p class="text-gray-700 text-center text-lg font-semibold max-w-md mb-6" id="errorMessage">Verifique se a planilha está publicada na web.</p>
-                <button onclick="loadSheetData()" class="text-blue-700 hover:text-blue-900 font-black text-xl underline">Tentar Novamente</button>
+                <p class="text-gray-900 font-black text-xl mb-2">Erro ao carregar dados</p>
+                <p class="text-gray-600 text-center font-medium max-w-md mb-4" id="errorMessage">Verifique se a planilha está publicada na web.</p>
+                <button onclick="loadSheetData()" class="text-blue-600 hover:text-blue-800 font-bold underline">Tentar Novamente</button>
             </div>
 
             <!-- Table -->
@@ -213,17 +210,17 @@
                 <div class="table-container">
                     <table class="w-full" id="dataTable">
                         <thead id="tableHead" class="sticky-header bg-gray-100"></thead>
-                        <tbody id="tableBody" class="divide-y-2 divide-gray-200 bg-white"></tbody>
+                        <tbody id="tableBody" class="divide-y divide-gray-200 bg-white"></tbody>
                     </table>
                 </div>
-                <div id="emptyState" class="hidden flex-col items-center justify-center py-32">
-                    <i class="fa-solid fa-inbox text-gray-300 text-6xl mb-6"></i>
-                    <p class="text-gray-800 font-bold text-2xl">Nenhum resultado encontrado</p>
+                <div id="emptyState" class="hidden flex-col items-center justify-center py-24">
+                    <i class="fa-solid fa-inbox text-gray-300 text-5xl mb-4"></i>
+                    <p class="text-gray-700 font-bold text-xl">Nenhum resultado encontrado</p>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mt-6 text-white text-lg font-bold">
+        <div class="text-center mt-4 text-white text-sm font-medium">
             <p>Auto-atualiza a cada 5 min • <a href="https://docs.google.com/spreadsheets/d/1saW5csmqM6QMv4ezBpSn3LUEb_84GUi6HjdShS3bYhE" target="_blank" class="underline hover:text-blue-200">Ver Planilha</a></p>
         </div>
     </div>
@@ -265,7 +262,6 @@
                 headers = parsed[0];
                 sheetData = parsed.slice(1);
 
-                // Find column indices for Planejado and Transferido
                 planejadoIdx = headers.findIndex(h => h.toLowerCase().includes('planejado'));
                 transferidoIdx = headers.findIndex(h => h.toLowerCase().includes('transferido'));
 
@@ -323,32 +319,40 @@
         function renderTable() {
             if (headers.length === 0) return;
 
-            // Render headers with bigger text
             tableHead.innerHTML = `
-                <tr class="border-b-4 border-gray-300">
+                <tr class="border-b-2 border-gray-300">
                     ${headers.map((header, idx) => {
                         let displayName = header;
+                        
+                        // Renomeia a coluna específica
+                        if (displayName.toUpperCase() === 'CÓDIGO DO PRODUTO REVISÃO/TRANSFORMAÇÃO') {
+                            displayName = 'CÓDIGO DO PRODUTO';
+                        }
+                        
                         let emoji = '';
-                        if (header.toLowerCase().includes('planejado')) emoji = '📦 ';
-                        if (header.toLowerCase().includes('transferido')) emoji = '✅ ';
-                        if (header.toLowerCase() === 'codigo' || header.toLowerCase() === 'código') emoji = '🏷 ';
-                        if (header.toLowerCase().includes('produto')) emoji = '📋 ';
-                        if (header.toLowerCase().includes('%') || header.toLowerCase().includes('percentual')) emoji = '📊 ';
+                        const h = header.toLowerCase();
+                        
+                        if (h.includes('codigo')) emoji = '🏷 ';
+                        if (h.includes('revisão') || h.includes('revisao')) emoji = '🔧 ';
+                        if (h.includes('ativas')) emoji = '';
+                        if (h.includes('linha')) emoji = '';
+                        if (h.includes('produto elgin')) emoji = '📋 ';
+                        if (h.includes('planejado')) emoji = '📦 ';
+                        if (h.includes('transferido')) emoji = '✅ ';
 
                         return `
-                        <th class="px-6 md:px-8 py-6 text-left text-xl font-black text-gray-900 uppercase tracking-wide cursor-pointer hover:bg-gray-200 transition-colors select-none"
+                        <th class="px-5 md:px-6 py-4 text-left text-sm font-black text-gray-800 uppercase tracking-wide cursor-pointer hover:bg-gray-200 transition-colors select-none"
                             onclick="sortTable(${idx})">
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2">
                                 <span class="whitespace-nowrap">${emoji}${escapeHtml(displayName)}</span>
                                 <i class="fa-solid fa-sort sort-indicator ${currentSort.column === idx? 'active' : ''}
-                                   ${currentSort.column === idx? (currentSort.direction === 'asc'? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'} text-2xl"></i>
+                                   ${currentSort.column === idx? (currentSort.direction === 'asc'? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'} text-base"></i>
                             </div>
                         </th>
                     `}).join('')}
                 </tr>
             `;
 
-            // Filter and render data
             const filteredData = filterData();
 
             if (filteredData.length === 0) {
@@ -362,30 +366,23 @@
             emptyState.classList.remove('flex');
 
             tableBody.innerHTML = filteredData.map(row => `
-                <tr class="data-row border-b-2 border-gray-100">
+                <tr class="data-row border-b border-gray-100">
                     ${row.map((cell, idx) => {
                         const headerLower = headers[idx].toLowerCase();
-                        let cellClass = 'px-6 md:px-8 py-6 text-gray-900';
+                        let cellClass = 'px-5 md:px-6 py-4 text-gray-900';
 
-                        // Style specific columns
-                        if (headerLower === 'codigo' || headerLower === 'código') {
-                            cellClass += ' text-xl font-bold';
-                        } else if (headerLower.includes('produto')) {
-                            cellClass += ' text-lg font-semibold';
+                        if (headerLower.includes('codigo')) {
+                            cellClass += ' text-base font-bold';
+                        } else if (headerLower.includes('produto elgin')) {
+                            cellClass += ' text-base font-semibold';
                         } else if (headerLower.includes('planejado')) {
-                            cellClass += ' text-2xl font-bold text-blue-700';
+                            cellClass += ' text-xl font-bold text-blue-700';
                         } else if (headerLower.includes('transferido')) {
-                            cellClass += ' text-2xl font-bold text-green-700';
-                        } else if (headerLower.includes('%') || headerLower.includes('percentual')) {
-                            cellClass += ' text-2xl font-black';
-                            const percent = parseFloat(cell);
-                            if (!isNaN(percent)) {
-                                if (percent >= 100) cellClass += ' text-green-600';
-                                else if (percent >= 50) cellClass += ' text-orange-600';
-                                else cellClass += ' text-red-600';
-                            }
+                            cellClass += ' text-xl font-bold text-green-700';
+                        } else if (headerLower.includes('linha') || headerLower.includes('ativas')) {
+                            cellClass += ' text-base font-medium';
                         } else {
-                            cellClass += ' text-lg font-semibold';
+                            cellClass += ' text-base font-medium';
                         }
 
                         return `
@@ -400,7 +397,6 @@
         function filterData() {
             let data = [...sheetData];
 
-            // Apply search filter
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
                 data = data.filter(row =>
@@ -408,13 +404,11 @@
                 );
             }
 
-            // Apply sort
             if (currentSort.column!== null) {
                 data.sort((a, b) => {
                     const aVal = a[currentSort.column] || '';
                     const bVal = b[currentSort.column] || '';
 
-                    // Try numeric comparison first
                     const aNum = parseFloat(aVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
                     const bNum = parseFloat(bVal.replace(/[.,]/g, '').replace(/[%]/g, ''));
 
@@ -422,9 +416,8 @@
                         return currentSort.direction === 'asc'? aNum - bNum : bNum - aNum;
                     }
 
-                    // String comparison
                     return currentSort.direction === 'asc'
-                       ? aVal.localeCompare(bVal)
+                     ? aVal.localeCompare(bVal)
                         : bVal.localeCompare(aVal);
                 });
             }
@@ -445,25 +438,20 @@
         function formatCell(value, colIdx) {
             const val = escapeHtml(value);
 
-            // Format numbers with dots for thousands
             const num = parseFloat(val.replace(/[.,]/g, ''));
             if (!isNaN(num) && val.trim()!== '') {
                 const headerLower = headers[colIdx].toLowerCase();
-                if (headerLower.includes('%')) {
-                    return val + '%';
-                } else if (headerLower.includes('planejado') || headerLower.includes('transferido') || headerLower.includes('qtd') || headerLower.includes('quantidade')) {
+                if (headerLower.includes('planejado') || headerLower.includes('transferido')) {
                     return num.toLocaleString('pt-BR');
                 }
             }
 
-            // Detect URLs
             if (val.match(/^https?:\/\//i)) {
-                return `<a href="${val}" target="_blank" class="text-blue-700 hover:text-blue-900 hover:underline font-bold">${val}</a>`;
+                return `<a href="${val}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">${val}</a>`;
             }
 
-            // Detect email
             if (val.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                return `<a href="mailto:${val}" class="text-blue-700 hover:text-blue-900 hover:underline font-bold">${val}</a>`;
+                return `<a href="mailto:${val}" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold">${val}</a>`;
             }
 
             return val || '<span class="text-gray-400">—</span>';
@@ -523,7 +511,6 @@
             refreshIcon.classList.remove('animate-spin');
         }
 
-        // Event listeners
         searchInput.addEventListener('input', (e) => {
             searchTerm = e.target.value;
             renderTable();
@@ -531,12 +518,9 @@
 
         refreshBtn.addEventListener('click', loadSheetData);
 
-        // Auto-refresh every 5 minutes
         setInterval(loadSheetData, 5 * 60 * 1000);
 
-        // Initial load
         loadSheetData();
     </script>
-<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
 </body>
 </html>
