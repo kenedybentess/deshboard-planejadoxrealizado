@@ -10,23 +10,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         * { font-family: 'Inter', sans-serif; }
         body { background: #1e3a8a; min-height: 100vh; }
-     .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-     .card-planejado { border-left: 6px solid #2563eb; }
-     .card-transferido { border-left: 6px solid #16a34a; }
-     .table-container { max-height: calc(100vh - 440px); overflow: auto; }
+    .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .card-planejado { border-left: 6px solid #2563eb; }
+    .card-transferido { border-left: 6px solid #16a34a; }
+    .table-container { max-height: calc(100vh - 440px); overflow: auto; }
         @media (max-width: 768px) {.table-container { max-height: calc(100vh - 560px); } }
-     .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
-     .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
-     .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+    .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
+    .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-     .animate-spin { animation: spin 1s linear infinite; }
+    .animate-spin { animation: spin 1s linear infinite; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-     .fade-in { animation: fadeIn 0.4s ease-out; }
-     .sticky-header { position: sticky; top: 0; z-index: 10; }
-     .data-row:hover { background-color: #f8fafc; }
-     .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    .sticky-header { position: sticky; top: 0; z-index: 10; }
+    .data-row:hover { background-color: #f8fafc; }
+    .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
         th:hover.sort-indicator { opacity: 1; }
-     .sort-indicator.active { opacity: 1; }
+    .sort-indicator.active { opacity: 1; }
     </style>
 </head>
 <body class="p-3 md:p-5">
@@ -285,6 +285,7 @@
                         if (h.includes('transferido')) emoji = '✅ ';
                         if (h.includes('faltam')) emoji = '📉 ';
                         if (h.includes('produção %') || h.includes('criar planilha')) emoji = '📊 ';
+                        if (h.includes('ativas')) emoji = '🔘 ';
                         return `
                         <th class="px-5 md:px-6 py-4 text-left text-sm font-black text-gray-800 uppercase tracking-wide cursor-pointer hover:bg-gray-200 transition-colors select-none"
                             onclick="sortTable(${idx})">
@@ -339,6 +340,8 @@
                             if (percent >= 100) cellClass += ' text-green-600';
                             else if (percent >= 50) cellClass += ' text-orange-600';
                             else cellClass += ' text-red-600';
+                        } else if (headerLower.includes('ativas')) {
+                            cellClass += ' text-center';
                         } else {
                             cellClass += ' text-base font-medium';
                         }
@@ -393,8 +396,18 @@
         }
 
         function formatCell(value, colIdx) {
-            const val = String(value);
+            const val = String(value).trim();
             const headerLower = headers[colIdx].toLowerCase();
+
+            // Troca TRUE/FALSE por símbolos SÓ na coluna ATIVAS
+            if (headerLower.includes('ativas')) {
+                if (val.toUpperCase() === 'TRUE') {
+                    return '<i class="fa-solid fa-circle-check text-green-600 text-xl"></i>';
+                }
+                if (val.toUpperCase() === 'FALSE') {
+                    return '<i class="fa-solid fa-circle-xmark text-gray-300 text-xl"></i>';
+                }
+            }
 
             if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
                 const num = parseNumberBR(val);
