@@ -10,23 +10,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         * { font-family: 'Inter', sans-serif; }
         body { background: #1e3a8a; min-height: 100vh; }
-    .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .card-planejado { border-left: 6px solid #2563eb; }
-    .card-transferido { border-left: 6px solid #16a34a; }
-    .table-container { max-height: calc(100vh - 440px); overflow: auto; }
+   .glass { background: rgba(255, 255, 255, 1); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+   .card-planejado { border-left: 6px solid #2563eb; }
+   .card-transferido { border-left: 6px solid #16a34a; }
+   .table-container { max-height: calc(100vh - 440px); overflow: auto; }
         @media (max-width: 768px) {.table-container { max-height: calc(100vh - 560px); } }
-    .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
-    .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
-    .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+   .table-container::-webkit-scrollbar { width: 10px; height: 10px; }
+   .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
+   .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-    .animate-spin { animation: spin 1s linear infinite; }
+   .animate-spin { animation: spin 1s linear infinite; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-in { animation: fadeIn 0.4s ease-out; }
-    .sticky-header { position: sticky; top: 0; z-index: 10; }
-    .data-row:hover { background-color: #f8fafc; }
-    .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
+   .fade-in { animation: fadeIn 0.4s ease-out; }
+   .sticky-header { position: sticky; top: 0; z-index: 10; }
+   .data-row:hover { background-color: #f8fafc; }
+   .sort-indicator { opacity: 0.4; transition: opacity 0.2s; }
         th:hover.sort-indicator { opacity: 1; }
-    .sort-indicator.active { opacity: 1; }
+   .sort-indicator.active { opacity: 1; }
     </style>
 </head>
 <body class="p-3 md:p-5">
@@ -314,12 +314,12 @@
                         let cellClass = 'px-5 md:px-6 py-4 text-gray-900';
 
                         let cellValue = cell;
-                       if (idx === faltamIdx && planejadoIdx >= 0 && transferidoIdx >= 0) {
-    const planejado = parseNumberBR(row[planejadoIdx]);
-    const transferido = parseNumberBR(row[transferidoIdx]);
-    const diff = planejado - transferido;
-    cellValue = diff >= 0? diff : '+' + Math.abs(diff); // mostra +42 quando excede
-}
+                        if (idx === faltamIdx && planejadoIdx >= 0 && transferidoIdx >= 0) {
+                            const planejado = parseNumberBR(row[planejadoIdx]);
+                            const transferido = parseNumberBR(row[transferidoIdx]);
+                            const diff = planejado - transferido;
+                            cellValue = diff >= 0? diff : '+' + Math.abs(diff);
+                        }
 
                         if (headerLower.includes('codigo')) {
                             cellClass += ' text-base font-bold';
@@ -331,10 +331,15 @@
                             cellClass += ' text-xl font-bold text-green-700';
                         } else if (headerLower.includes('faltam')) {
                             cellClass += ' text-xl font-bold';
-                            const faltam = parseNumberBR(cellValue);
-                            if (faltam <= 0) cellClass += ' text-green-600';
-                            else if (faltam < 100) cellClass += ' text-orange-600';
-                            else cellClass += ' text-red-600';
+                            const valStr = String(cellValue).trim();
+                            if (valStr.startsWith('+')) {
+                                cellClass += ' text-emerald-600';
+                            } else {
+                                const faltam = parseNumberBR(cellValue);
+                                if (faltam === 0) cellClass += ' text-green-600';
+                                else if (faltam < 100) cellClass += ' text-orange-600';
+                                else cellClass += ' text-red-600';
+                            }
                         } else if (headerLower.includes('produção %') || headerLower.includes('criar planilha')) {
                             cellClass += ' text-xl font-black';
                             const percent = parseNumberBR(cellValue);
@@ -415,8 +420,20 @@
                 return num.toFixed(2) + '%';
             }
 
+            // FALTAM com tooltip e ícone de excedente
+            if (headerLower.includes('faltam')) {
+                if (val.startsWith('+')) {
+                    return `<span title="Excedente: produziu ${val} peças a mais que o planejado" class="inline-flex items-center gap-1">🚀 ${escapeHtml(val)}</span>`;
+                }
+                const num = parseNumberBR(val);
+                if (num === 0) {
+                    return `<span title="Meta concluída">${escapeHtml(val)}</span>`;
+                }
+                return num.toLocaleString('pt-BR');
+            }
+
             const num = parseNumberBR(val);
-            if (headerLower.includes('planejado') || headerLower.includes('transferido') || headerLower.includes('faltam')) {
+            if (headerLower.includes('planejado') || headerLower.includes('transferido')) {
                 return num.toLocaleString('pt-BR');
             }
             if (val.match(/^https?:\/\//i)) {
@@ -482,7 +499,7 @@
         });
 
         refreshBtn.addEventListener('click', loadSheetData);
-        setInterval(loadSheetData, 1 * 60 * 1000);
+        setInterval(loadSheetData, 5 * 60 * 1000);
         loadSheetData();
     </script>
 </body>
