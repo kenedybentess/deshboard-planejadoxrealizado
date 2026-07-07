@@ -314,11 +314,12 @@
                         let cellClass = 'px-5 md:px-6 py-4 text-gray-900';
 
                         let cellValue = cell;
-                        if (idx === faltamIdx && planejadoIdx >= 0 && transferidoIdx >= 0) {
-                            const planejado = parseNumberBR(row[planejadoIdx]);
-                            const transferido = parseNumberBR(row[transferidoIdx]);
-                            cellValue = planejado - transferido;
-                        }
+                       if (idx === faltamIdx && planejadoIdx >= 0 && transferidoIdx >= 0) {
+    const planejado = parseNumberBR(row[planejadoIdx]);
+    const transferido = parseNumberBR(row[transferidoIdx]);
+    const diff = planejado - transferido;
+    cellValue = diff >= 0? diff : '+' + Math.abs(diff); // mostra +42 quando excede
+}
 
                         if (headerLower.includes('codigo')) {
                             cellClass += ' text-base font-bold';
